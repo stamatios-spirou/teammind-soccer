@@ -1,69 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { MatchCard } from "@/components/Match/MatchCard";
 import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
+import { Filter, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-const allMatches = [
-  {
-    id: "1",
-    date: "Today",
-    time: "6:00 PM",
-    field: "Field A - Main Campus",
-    playersCount: 8,
-    maxPlayers: 14,
-    fairnessScore: 9,
-    skillLevel: "Intermediate",
-    gameType: "casual" as const,
-  },
-  {
-    id: "2",
-    date: "Tomorrow",
-    time: "5:30 PM",
-    field: "Field B - Recreation Center",
-    playersCount: 12,
-    maxPlayers: 14,
-    fairnessScore: 8,
-    skillLevel: "Advanced",
-    gameType: "competitive" as const,
-  },
-  {
-    id: "3",
-    date: "Friday",
-    time: "7:00 PM",
-    field: "Field C - West Campus",
-    playersCount: 6,
-    maxPlayers: 10,
-    fairnessScore: 7,
-    skillLevel: "Beginner",
-    gameType: "casual" as const,
-  },
-  {
-    id: "4",
-    date: "Saturday",
-    time: "4:00 PM",
-    field: "Field A - Main Campus",
-    playersCount: 10,
-    maxPlayers: 14,
-    fairnessScore: 9,
-    skillLevel: "Intermediate",
-    gameType: "competitive" as const,
-  },
-  {
-    id: "5",
-    date: "Sunday",
-    time: "3:00 PM",
-    field: "Field D - East Campus",
-    playersCount: 4,
-    maxPlayers: 12,
-    fairnessScore: 6,
-    skillLevel: "Beginner",
-    gameType: "casual" as const,
-  },
-];
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Matches = () => {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [matches, setMatches] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadMatches();
+  }, []);
+
+  const loadMatches = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('matches')
+        .select(`
+          *,
+          fields(name, location),
+          teams(id, team_members(id))
+        `)
+        .eq('is_public', true)
+        .gte('scheduled_at', new Date().toISOString())
+        .order('scheduled_at', { ascending: true });
+
+      if (error) throw error;
+      setMatches(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error loading matches",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (date.toDateString() === today.toDateString()) return 'Today';
+    if (date.toDateString() === tomorrow.toDateString()) return 'Tomorrow';
+    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  };
+
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  };
+
+  const getPlayerCount = (match: any) => {
+    if (!match.teams) return 0;
+    return match.teams.reduce((sum: number, team: any) => sum + (team.team_members?.length || 0), 0);
+  };
 
   const filters = [
     { id: "today", label: "Today" },
@@ -101,14 +100,37 @@ const Matches = () => {
 
       {/* Match List */}
       <div className="space-y-3">
-        {allMatches.map((match) => (
-          <MatchCard
-            key={match.id}
-            {...match}
-            onViewDetails={() => console.log("View details:", match.id)}
-          />
-        ))}
+        {loading ? (
+          <div className="text-center py-8 text-muted-foreground">Loading...</div>
+        ) : matches.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">No matches found</div>
+        ) : (
+          matches.map((match) => (
+            <MatchCard
+              key={match.id}
+              id={match.id}
+              date={formatDate(match.scheduled_at)}
+              time={formatTime(match.scheduled_at)}
+              field={match.fields?.name || 'TBD'}
+              playersCount={getPlayerCount(match)}
+              maxPlayers={match.max_players}
+              fairnessScore={match.fairness_score || 0}
+              skillLevel={match.skill_level || 'intermediate'}
+              gameType={match.match_type || 'casual'}
+              onViewDetails={() => navigate(`/match/${match.id}`)}
+            />
+          ))
+        )}
       </div>
+
+      {/* Floating Action Button for Captains */}
+      <Button
+        onClick={() => navigate('/create-match')}
+        className="fixed bottom-24 right-4 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg"
+        size="icon"
+      >
+        <Plus className="w-6 h-6" />
+      </Button>
     </div>
   );
 };
