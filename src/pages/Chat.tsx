@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MessageSquare, Users, Crown, Send } from "lucide-react";
+import { MessageSquare, Users, Crown, Send, ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -63,16 +63,15 @@ const Chat = () => {
 
   if (selectedChat) {
     return (
-      <div className="h-screen flex flex-col bg-background">
+      <div className="flex flex-col bg-background min-h-screen">
         {/* Chat Header */}
         <div className="bg-card border-b border-border px-4 py-4 flex items-center gap-3">
           <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={() => setSelectedChat(null)}
-            className="mr-2"
           >
-            ← Back
+            <ArrowLeft className="w-5 h-5" />
           </Button>
           <Avatar className="w-10 h-10">
             <AvatarFallback className="bg-primary text-primary-foreground">BT</AvatarFallback>
@@ -120,7 +119,7 @@ const Chat = () => {
         </div>
 
         {/* Input */}
-        <div className="bg-card border-t border-border px-4 py-3 pb-20">
+        <div className="bg-card border-t border-border px-4 py-3 mb-16">
           <div className="flex items-center gap-2">
             <Input
               value={message}
@@ -138,7 +137,7 @@ const Chat = () => {
   }
 
   return (
-    <div className="min-h-screen pt-6 px-4 pb-8">
+    <div className="min-h-screen pt-6 px-4">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-foreground mb-2">Chat</h1>
         <p className="text-muted-foreground">Stay connected with your teams</p>
