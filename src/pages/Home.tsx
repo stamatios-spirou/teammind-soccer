@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 const Home = () => {
   const [selectedSlot, setSelectedSlot] = useState<string>("");
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
   const [isSearching, setIsSearching] = useState(false);
   const [matches, setMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +56,14 @@ const Home = () => {
       toast({
         title: "Select a time slot",
         description: "Please choose when you'd like to play",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (!selectedLocation) {
+      toast({
+        title: "Select a location",
+        description: "Please choose where you'd like to play",
         variant: "destructive"
       });
       return;
@@ -113,23 +122,36 @@ const Home = () => {
 
         {/* Auto-Place Section */}
         <div className="bg-card rounded-2xl p-4 shadow-lg">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button onClick={handleAutoPlace} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl h-14 text-lg font-bold shadow-glow-green">
+          <div className="flex flex-col gap-3">
+            <Button onClick={handleAutoPlace} className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl h-14 text-lg font-bold shadow-glow-green">
               <Zap className="w-5 h-5 mr-2" />
               Auto-Place Me!
             </Button>
             
-            <Select value={selectedSlot} onValueChange={setSelectedSlot}>
-              <SelectTrigger className="flex-1 h-14 rounded-xl bg-muted border-border">
-                <SelectValue placeholder="Select Time Slot" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="today-6pm">Today 6:00 PM</SelectItem>
-                <SelectItem value="tomorrow-5:30pm">Tomorrow 5:30 PM</SelectItem>
-                <SelectItem value="friday-7pm">Friday 7:00 PM</SelectItem>
-                <SelectItem value="saturday-4pm">Saturday 4:00 PM</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Select value={selectedSlot} onValueChange={setSelectedSlot}>
+                <SelectTrigger className="flex-1 h-14 rounded-xl bg-muted border-border">
+                  <SelectValue placeholder="Select Time Slot" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="today-6pm">Today 6:00 PM</SelectItem>
+                  <SelectItem value="tomorrow-5:30pm">Tomorrow 5:30 PM</SelectItem>
+                  <SelectItem value="friday-7pm">Friday 7:00 PM</SelectItem>
+                  <SelectItem value="saturday-4pm">Saturday 4:00 PM</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                <SelectTrigger className="flex-1 h-14 rounded-xl bg-muted border-border">
+                  <SelectValue placeholder="Select Location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="lubetkin">Lubetkin Field</SelectItem>
+                  <SelectItem value="frederick-douglass">Frederick Douglass Field</SelectItem>
+                  <SelectItem value="wec">WEC (Indoors)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </header>
