@@ -112,7 +112,7 @@ const Home = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-black text-foreground tracking-tight">TeamMind</h1>
-            <p className="text-sm text-muted-foreground">AI-Powered Pickup Soccer</p>
+            
           </div>
           <Button size="icon" variant="ghost" className="relative">
             <Bell className="w-5 h-5" />
