@@ -15,6 +15,7 @@ import Onboarding from "./pages/Onboarding";
 import MatchDetails from "./pages/MatchDetails";
 import AutoPlacementConfirmation from "./pages/AutoPlacementConfirmation";
 import CreateMatch from "./pages/CreateMatch";
+import AutoPlace from "./pages/AutoPlace";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/match/:id" element={<ProtectedRoute><MainLayout><MatchDetails /></MainLayout></ProtectedRoute>} />
             <Route path="/create-match" element={<ProtectedRoute><MainLayout><CreateMatch /></MainLayout></ProtectedRoute>} />
             <Route path="/teams" element={<ProtectedRoute><MainLayout><Teams /></MainLayout></ProtectedRoute>} />
+            <Route path="/auto-place" element={<ProtectedRoute><MainLayout><AutoPlace /></MainLayout></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute><MainLayout><Chat /></MainLayout></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><MainLayout><Settings /></MainLayout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />

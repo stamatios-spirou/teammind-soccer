@@ -2,64 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Orange Sports Theme - Premium Athletic Design System */
 
 @layer base {
   :root {
-    --background: 209 100% 8%;
-    --foreground: 0 0% 100%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
 
-    --card: 210 50% 12%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 210 50% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 142 85% 50%;
-    --primary-foreground: 209 100% 8%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217 91% 60%;
+    --secondary: 24 80% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 20%;
+    --muted: 0 0% 15%;
     --muted-foreground: 0 0% 60%;
 
-    --accent: 142 85% 50%;
-    --accent-foreground: 209 100% 8%;
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 40% 20%;
-    --input: 210 40% 20%;
-    --ring: 142 85% 50%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 24 95% 53%;
 
     --radius: 1rem;
 
-    --chart-1: 142 85% 50%;
-    --chart-2: 217 91% 60%;
-    --chart-3: 280 70% 55%;
-    --chart-4: 45 100% 50%;
+    --chart-1: 24 95% 53%;
+    --chart-2: 35 100% 50%;
+    --chart-3: 45 100% 55%;
+    --chart-4: 15 90% 45%;
     --chart-5: 0 84% 60%;
 
-    /* TeamMind custom tokens */
-    --navy-dark: 209 100% 8%;
-    --navy-card: 210 50% 12%;
-    --navy-elevated: 210 40% 16%;
-    --electric-green: 142 85% 50%;
-    --rich-blue: 217 91% 60%;
-    --text-primary: 0 0% 100%;
-    --text-secondary: 0 0% 60%;
-    --text-muted: 0 0% 45%;
+    /* TeamMind Orange Theme Tokens */
+    --orange-burnt: 24 80% 45%;
+    --orange-sunset: 35 100% 50%;
+    --orange-primary: 24 95% 53%;
+    --charcoal: 0 0% 12%;
+    --charcoal-elevated: 0 0% 15%;
+    --matte-black: 0 0% 5%;
+    --gold-position: 45 100% 50%;
+    --text-primary: 0 0% 95%;
+    --text-secondary: 0 0% 70%;
+    --text-muted: 0 0% 50%;
 
     /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-    --shadow-glow-green: 0 0 24px rgba(14, 234, 74, 0.3);
-    --shadow-glow-blue: 0 0 24px rgba(97, 174, 255, 0.3);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+    --shadow-glow-orange: 0 0 24px rgba(249, 115, 22, 0.4);
+    --shadow-glow-gold: 0 0 20px rgba(250, 204, 21, 0.5);
 
     /* Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -117,5 +117,30 @@ All colors MUST be HSL.
 
   .nav-item-inactive {
     @apply text-muted-foreground;
+  }
+
+  .gradient-orange {
+    background: linear-gradient(135deg, hsl(24, 80%, 45%) 0%, hsl(35, 100%, 50%) 100%);
+  }
+
+  .gradient-sunset {
+    background: linear-gradient(180deg, hsl(24, 95%, 53%) 0%, hsl(35, 100%, 50%) 100%);
+  }
+
+  .glow-gold {
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+    border-color: hsl(45, 100%, 50%);
+  }
+
+  .position-gold {
+    @apply bg-[hsl(45,100%,50%)] text-black;
+  }
+
+  .position-gray {
+    @apply bg-muted-foreground/30 text-muted-foreground;
+  }
+
+  .position-outline {
+    @apply border border-muted-foreground/40 bg-transparent text-muted-foreground;
   }
 }
