@@ -51,10 +51,10 @@ const App = () => (
             
             <Route path="/" element={<ProtectedRoute><MainLayout><Home /></MainLayout></ProtectedRoute>} />
             <Route path="/matches" element={<ProtectedRoute><MainLayout><Matches /></MainLayout></ProtectedRoute>} />
-            <Route path="/match/:id" element={<ProtectedRoute><MatchDetails /></ProtectedRoute>} />
-            <Route path="/create-match" element={<ProtectedRoute><CreateMatch /></ProtectedRoute>} />
+            <Route path="/match/:id" element={<ProtectedRoute><MainLayout><MatchDetails /></MainLayout></ProtectedRoute>} />
+            <Route path="/create-match" element={<ProtectedRoute><MainLayout><CreateMatch /></MainLayout></ProtectedRoute>} />
             <Route path="/teams" element={<ProtectedRoute><MainLayout><Teams /></MainLayout></ProtectedRoute>} />
-            <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute><MainLayout><Chat /></MainLayout></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><MainLayout><Settings /></MainLayout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
