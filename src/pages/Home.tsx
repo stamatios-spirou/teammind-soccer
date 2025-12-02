@@ -111,8 +111,8 @@ const Home = () => {
       <header className="bg-gradient-to-b from-navy-dark to-background px-4 pt-8 pb-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-foreground mb-1">Welcome back, Diego!</h1>
-            <p className="text-sm text-muted-foreground">Ready for your next game?</p>
+            <h1 className="text-3xl font-black text-foreground tracking-tight">TeamMind</h1>
+            <p className="text-sm text-muted-foreground">AI-Powered Pickup Soccer</p>
           </div>
           <Button size="icon" variant="ghost" className="relative">
             <Bell className="w-5 h-5" />
