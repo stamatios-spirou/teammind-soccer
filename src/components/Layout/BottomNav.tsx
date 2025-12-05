@@ -1,12 +1,12 @@
-import { Home, Calendar, Zap, MessageSquare, Settings } from "lucide-react";
+import { Home, Calendar, Zap, Newspaper, MessageSquare, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
   { icon: Calendar, label: "Matches", path: "/matches" },
   { icon: Zap, label: "Auto Place", path: "/auto-place" },
+  { icon: Newspaper, label: "Feed", path: "/feed" },
   { icon: MessageSquare, label: "Chat", path: "/chat" },
-  { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
 export const BottomNav = () => {
