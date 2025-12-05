@@ -19,7 +19,9 @@ export type Database = {
           capacity: number | null
           created_at: string | null
           id: string
+          latitude: number | null
           location: string
+          longitude: number | null
           name: string
           status: string | null
         }
@@ -27,7 +29,9 @@ export type Database = {
           capacity?: number | null
           created_at?: string | null
           id?: string
+          latitude?: number | null
           location: string
+          longitude?: number | null
           name: string
           status?: string | null
         }
@@ -35,7 +39,9 @@ export type Database = {
           capacity?: number | null
           created_at?: string | null
           id?: string
+          latitude?: number | null
           location?: string
+          longitude?: number | null
           name?: string
           status?: string | null
         }
@@ -246,8 +252,10 @@ export type Database = {
           avatar_url: string | null
           created_at: string | null
           email: string
+          fair_play_rating: number | null
           full_name: string | null
           games_played: number | null
+          home_field_id: string | null
           id: string
           phone: string | null
           preferred_match_type: Database["public"]["Enums"]["match_type"] | null
@@ -256,14 +264,17 @@ export type Database = {
             | null
           skill_level: Database["public"]["Enums"]["skill_level"] | null
           updated_at: string | null
+          win_rate: number | null
         }
         Insert: {
           attendance_rate?: number | null
           avatar_url?: string | null
           created_at?: string | null
           email: string
+          fair_play_rating?: number | null
           full_name?: string | null
           games_played?: number | null
+          home_field_id?: string | null
           id: string
           phone?: string | null
           preferred_match_type?:
@@ -274,14 +285,17 @@ export type Database = {
             | null
           skill_level?: Database["public"]["Enums"]["skill_level"] | null
           updated_at?: string | null
+          win_rate?: number | null
         }
         Update: {
           attendance_rate?: number | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string
+          fair_play_rating?: number | null
           full_name?: string | null
           games_played?: number | null
+          home_field_id?: string | null
           id?: string
           phone?: string | null
           preferred_match_type?:
@@ -292,8 +306,17 @@ export type Database = {
             | null
           skill_level?: Database["public"]["Enums"]["skill_level"] | null
           updated_at?: string | null
+          win_rate?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_home_field_id_fkey"
+            columns: ["home_field_id"]
+            isOneToOne: false
+            referencedRelation: "fields"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rotations: {
         Row: {

@@ -4,17 +4,18 @@ import { Button } from "@/components/ui/button";
 import { HeroSection } from "@/components/Home/HeroSection";
 import { LiveStats } from "@/components/Home/LiveStats";
 import { MatchPreviewCard } from "@/components/Home/MatchPreviewCard";
-import { Calendar, MapPin } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Calendar, MapPin, Users, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { format, addDays, isSameDay, startOfDay } from "date-fns";
+import { toast } from "sonner";
 
 interface MatchData {
   id: string;
   scheduled_at: string;
   max_players: number;
   match_type: string;
+  skill_level: string;
   fields?: { name: string; location: string };
   teams?: Array<{ id: string; team_members?: Array<{ id: string }> }>;
 }
@@ -28,7 +29,6 @@ const Home = () => {
   const [matches, setMatches] = useState<MatchData[]>([]);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
-  const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -70,10 +70,8 @@ const Home = () => {
       if (error) throw error;
       setMatches(data || []);
     } catch (error: any) {
-      toast({
-        title: "Error loading matches",
+      toast.error("Error loading matches", {
         description: error.message,
-        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -92,7 +90,6 @@ const Home = () => {
   };
 
   const generateMockPositions = (matchId: string, maxPlayers: number) => {
-    // Generate consistent mock positions based on match id
     const seed = matchId.charCodeAt(0) + matchId.charCodeAt(1);
     const perTeam = Math.floor(maxPlayers / 2);
     
@@ -142,13 +139,18 @@ const Home = () => {
 
   const matchesByDay = groupMatchesByDay();
 
+  // Check for "forming match" opportunities (mock - would need a proper interest tracking system)
+  const formingOpportunities = [
+    { time: "5:00 PM", playersInterested: 11, date: "Today" },
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-24">
       {/* Hero Section */}
       <HeroSection />
 
       {/* Live Stats */}
-      <LiveStats playersOnline={34} gamesToday={5} fieldsAvailable={2} />
+      <LiveStats />
 
       {/* NJIT Badge */}
       <div className="px-4 mt-4">
@@ -177,6 +179,39 @@ const Home = () => {
           View Fields
         </Button>
       </div>
+
+      {/* Forming Match Opportunities */}
+      {formingOpportunities.length > 0 && (
+        <section className="px-4 mt-6">
+          <h2 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-gold" />
+            Open Game Opportunities
+          </h2>
+          {formingOpportunities.map((opp, idx) => (
+            <div
+              key={idx}
+              className="bg-gradient-to-r from-gold/20 to-primary/20 border border-gold/30 rounded-xl p-4 mb-3"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-foreground font-semibold">
+                    {opp.playersInterested} Players want a game at {opp.time}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{opp.date}</p>
+                </div>
+                <Button
+                  onClick={() => navigate("/create-match")}
+                  size="sm"
+                  className="bg-gold text-charcoal-dark hover:bg-gold/90 font-bold"
+                >
+                  <Users className="w-4 h-4 mr-1" />
+                  Create Match
+                </Button>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
 
       {/* Matches by Day */}
       <section className="px-4 py-6">

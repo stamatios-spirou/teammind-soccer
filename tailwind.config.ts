@@ -55,8 +55,10 @@ export default {
         charcoal: {
           DEFAULT: "hsl(var(--charcoal))",
           elevated: "hsl(var(--charcoal-elevated))",
+          dark: "hsl(0 0% 8%)",
         },
         gold: {
+          DEFAULT: "hsl(var(--gold-position))",
           position: "hsl(var(--gold-position))",
         },
         chart: {
