@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { HeroSection } from "@/components/Home/HeroSection";
 import { LiveStats } from "@/components/Home/LiveStats";
 import { MatchPreviewCard } from "@/components/Home/MatchPreviewCard";
-import { SocialFeed } from "@/components/Home/SocialFeed";
 import { Calendar, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,8 +20,8 @@ interface MatchData {
 }
 
 const NJIT_FIELDS = [
-  { name: "Lubetkin Field", location: "Mal Simon Stadium" },
-  { name: "Rutgers Soccer Field", location: "NJIT Campus" },
+  { name: "Lubetkin Field", location: "100 Lock Street, Newark, NJ 07102" },
+  { name: "Frederick Douglass Field", location: "42 Warren Street, Newark, NJ 07102" },
 ];
 
 const Home = () => {
@@ -217,9 +216,6 @@ const Home = () => {
           </div>
         )}
       </section>
-
-      {/* Social Feed */}
-      <SocialFeed />
     </div>
   );
 };

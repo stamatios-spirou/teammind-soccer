@@ -8,6 +8,8 @@ import { MainLayout } from "./components/Layout/MainLayout";
 import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import Teams from "./pages/Teams";
+import Fields from "./pages/Fields";
+import Feed from "./pages/Feed";
 import Chat from "./pages/Chat";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
@@ -55,6 +57,8 @@ const App = () => (
             <Route path="/match/:id" element={<ProtectedRoute><MainLayout><MatchDetails /></MainLayout></ProtectedRoute>} />
             <Route path="/create-match" element={<ProtectedRoute><MainLayout><CreateMatch /></MainLayout></ProtectedRoute>} />
             <Route path="/teams" element={<ProtectedRoute><MainLayout><Teams /></MainLayout></ProtectedRoute>} />
+            <Route path="/fields" element={<ProtectedRoute><MainLayout><Fields /></MainLayout></ProtectedRoute>} />
+            <Route path="/feed" element={<ProtectedRoute><MainLayout><Feed /></MainLayout></ProtectedRoute>} />
             <Route path="/auto-place" element={<ProtectedRoute><MainLayout><AutoPlace /></MainLayout></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute><MainLayout><Chat /></MainLayout></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><MainLayout><Settings /></MainLayout></ProtectedRoute>} />
