@@ -1,4 +1,4 @@
-import { Home, Calendar, Zap, Newspaper, MessageSquare, Settings } from "lucide-react";
+import { Home, Calendar, Zap, Newspaper, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 
 const navItems = [
@@ -6,7 +6,7 @@ const navItems = [
   { icon: Calendar, label: "Matches", path: "/matches" },
   { icon: Zap, label: "Auto Place", path: "/auto-place" },
   { icon: Newspaper, label: "Feed", path: "/feed" },
-  { icon: MessageSquare, label: "Chat", path: "/chat" },
+  { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
 export const BottomNav = () => {
@@ -17,13 +17,13 @@ export const BottomNav = () => {
           <NavLink
             key={path}
             to={path}
-            className="flex flex-col items-center justify-center gap-1 px-4 py-2 min-w-[64px] transition-colors"
+            className="flex flex-col items-center justify-center gap-0.5 px-3 py-2 min-w-[56px] transition-colors"
             activeClassName="nav-item-active"
           >
             {({ isActive }) => (
               <>
                 <Icon className={`w-5 h-5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
-                <span className={`text-xs font-medium ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                <span className={`text-[10px] font-medium text-center ${isActive ? "text-primary" : "text-muted-foreground"}`}>
                   {label}
                 </span>
               </>

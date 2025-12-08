@@ -1,14 +1,18 @@
 import { useAuth } from "@/contexts/AuthContext";
+
 export const HeroSection = () => {
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
   const userName = user?.user_metadata?.full_name?.split(' ')[0] || 'Player';
-  return <div className="relative h-56 overflow-hidden">
+  
+  return (
+    <div className="relative h-64 overflow-hidden">
       {/* Stadium Background Image */}
-      <div className="absolute inset-0 bg-cover bg-center" style={{
-      backgroundImage: `url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=80')`
-    }} />
+      <div 
+        className="absolute inset-0 bg-cover bg-center" 
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=80')`
+        }} 
+      />
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-background" />
@@ -17,11 +21,14 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
       
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-center p-6 pt-8">
-        <h1 className="font-black text-foreground leading-snug text-3xl">
+      <div className="relative z-10 h-full flex flex-col justify-center px-6 py-8">
+        <h1 className="font-black text-foreground leading-tight text-2xl sm:text-3xl max-w-[320px]">
           <span className="text-primary">{userName}</span>, pickup soccer is happening near you today.
         </h1>
-        <p className="text-muted-foreground mt-3 text-base font-bold">Join a game at NJIT in seconds.</p>
+        <p className="text-muted-foreground mt-4 text-sm sm:text-base font-medium">
+          Join a game at NJIT & Rutgers in seconds.
+        </p>
       </div>
-    </div>;
+    </div>
+  );
 };
