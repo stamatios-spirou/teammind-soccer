@@ -24,10 +24,11 @@ export const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col justify-end p-6">
         <h1 className="text-3xl font-black text-foreground leading-tight">
-          Ready for your next game,
-          <br />
-          <span className="text-primary">{userName}?</span>
+          <span className="text-primary">{userName}</span>, pickup soccer is happening near you today.
         </h1>
+        <p className="text-muted-foreground mt-2 text-sm">
+          Join a game at NJIT & Rutgers in seconds.
+        </p>
       </div>
     </div>
   );
