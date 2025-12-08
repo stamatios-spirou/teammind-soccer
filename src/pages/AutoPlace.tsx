@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Zap, MapPin, Clock, Users, Target, TrendingUp } from "lucide-react";
+import { Zap, MapPin, Clock, Users, Target, TrendingUp, Sun, Sunset, Moon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { SearchingModal } from "@/components/AutoPlacement/SearchingModal";
@@ -17,13 +17,21 @@ interface RecommendedMatch {
   matchScore: number;
 }
 
+type TimeSlot = "morning" | "afternoon" | "night" | null;
+
 const AutoPlace = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [selectedTime, setSelectedTime] = useState<TimeSlot>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [recommendedMatch, setRecommendedMatch] = useState<RecommendedMatch | null>(null);
-  const [showMore, setShowMore] = useState(false);
+
+  const timeSlots = [
+    { id: "morning" as TimeSlot, label: "Morning", icon: Sun, description: "6am - 12pm" },
+    { id: "afternoon" as TimeSlot, label: "Afternoon", icon: Sunset, description: "12pm - 6pm" },
+    { id: "night" as TimeSlot, label: "Night", icon: Moon, description: "6pm - 12am" },
+  ];
 
   useEffect(() => {
     if (user) loadUserProfile();
@@ -40,14 +48,21 @@ const AutoPlace = () => {
   };
 
   const handleFindMatch = () => {
+    if (!selectedTime) return;
     setIsSearching(true);
     
-    // Simulate finding a match
+    // Simulate finding a match based on time preference
+    const timeLabels = {
+      morning: "9:00 AM",
+      afternoon: "3:00 PM",
+      night: "7:00 PM"
+    };
+    
     setTimeout(() => {
       setRecommendedMatch({
         id: "rec-1",
         field: "Lubetkin Field",
-        time: "5:00 PM",
+        time: timeLabels[selectedTime],
         date: "Today",
         role: userProfile?.preferred_position || "Midfielder",
         playersCount: 10,
@@ -74,9 +89,9 @@ const AutoPlace = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-background p-4 pb-24">
       {/* Header */}
-      <div className="text-center py-8">
+      <div className="text-center py-6">
         <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-primary/20 flex items-center justify-center">
           <Zap className="w-10 h-10 text-primary" />
         </div>
@@ -85,6 +100,34 @@ const AutoPlace = () => {
           Find the perfect game based on your preferences
         </p>
       </div>
+
+      {/* Time Selection */}
+      {!recommendedMatch && (
+        <div className="mb-6">
+          <h3 className="font-semibold text-foreground mb-3 text-center">When do you want to play?</h3>
+          <div className="grid grid-cols-3 gap-3">
+            {timeSlots.map(({ id, label, icon: Icon, description }) => (
+              <button
+                key={id}
+                onClick={() => setSelectedTime(id)}
+                className={`
+                  flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all
+                  ${selectedTime === id 
+                    ? "border-primary bg-primary/10" 
+                    : "border-border hover:border-primary/50 hover:bg-muted"
+                  }
+                `}
+              >
+                <Icon className={`w-7 h-7 mb-2 ${selectedTime === id ? "text-primary" : "text-muted-foreground"}`} />
+                <span className={`font-semibold text-sm ${selectedTime === id ? "text-primary" : "text-foreground"}`}>
+                  {label}
+                </span>
+                <span className="text-xs text-muted-foreground mt-1">{description}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* User Preferences Summary */}
       {userProfile && (
@@ -138,21 +181,12 @@ const AutoPlace = () => {
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <Button
-              onClick={() => navigate(`/match/${recommendedMatch.id}`)}
-              className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 font-bold"
-            >
-              Join Now
-            </Button>
-            <Button
-              onClick={() => setShowMore(true)}
-              variant="outline"
-              className="flex-1 border-primary text-primary hover:bg-primary/10"
-            >
-              See More
-            </Button>
-          </div>
+          <Button
+            onClick={() => navigate(`/match/${recommendedMatch.id}`)}
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold h-12"
+          >
+            Join Now
+          </Button>
         </div>
       )}
 
@@ -160,8 +194,8 @@ const AutoPlace = () => {
       {!recommendedMatch && (
         <Button
           onClick={handleFindMatch}
-          disabled={isSearching}
-          className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-lg font-bold shadow-glow-orange"
+          disabled={isSearching || !selectedTime}
+          className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl text-lg font-bold shadow-glow-orange disabled:opacity-50"
         >
           {isSearching ? (
             <>
@@ -171,7 +205,7 @@ const AutoPlace = () => {
           ) : (
             <>
               <Zap className="w-5 h-5 mr-2" />
-              Find My Perfect Game
+              Find My Game
             </>
           )}
         </Button>
@@ -180,7 +214,10 @@ const AutoPlace = () => {
       {/* Reset */}
       {recommendedMatch && (
         <Button
-          onClick={() => setRecommendedMatch(null)}
+          onClick={() => {
+            setRecommendedMatch(null);
+            setSelectedTime(null);
+          }}
           variant="ghost"
           className="w-full mt-4 text-muted-foreground"
         >
@@ -193,7 +230,7 @@ const AutoPlace = () => {
         isOpen={isSearching}
         onClose={() => setIsSearching(false)}
         onComplete={handlePlacementComplete}
-        selectedTime="auto"
+        selectedTime={selectedTime || "auto"}
       />
     </div>
   );
