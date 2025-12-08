@@ -17,7 +17,7 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
       
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-center p-6 pt-12">
+      <div className="relative z-10 h-full flex flex-col justify-center p-6 pt-8">
         <h1 className="font-black text-foreground leading-snug text-3xl">
           <span className="text-primary">{userName}</span>, pickup soccer is happening near you today.
         </h1>
