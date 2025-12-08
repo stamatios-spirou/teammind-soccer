@@ -21,9 +21,7 @@ export const HeroSection = () => {
         <h1 className="font-black text-foreground leading-snug text-3xl">
           <span className="text-primary">{userName}</span>, pickup soccer is happening near you today.
         </h1>
-        <p className="text-muted-foreground mt-3 text-base font-bold">
-          Join a game at NJIT & Rutgers in seconds.
-        </p>
+        <p className="text-muted-foreground mt-3 text-base font-bold">Join a game at NJIT in seconds.</p>
       </div>
     </div>;
 };
