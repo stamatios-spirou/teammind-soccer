@@ -22,11 +22,11 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
       
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-end p-6">
-        <h1 className="text-3xl font-black text-foreground leading-tight">
+      <div className="relative z-10 h-full flex flex-col justify-center p-6 pt-12">
+        <h1 className="text-2xl font-black text-foreground leading-snug">
           <span className="text-primary">{userName}</span>, pickup soccer is happening near you today.
         </h1>
-        <p className="text-muted-foreground mt-2 text-sm">
+        <p className="text-muted-foreground mt-3 text-sm">
           Join a game at NJIT & Rutgers in seconds.
         </p>
       </div>
