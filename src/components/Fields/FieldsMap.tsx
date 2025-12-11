@@ -93,9 +93,9 @@ const FieldsMap: React.FC<FieldsMapProps> = ({ fields, onFieldSelect }) => {
   }, [fields, onFieldSelect]);
 
   return (
-    <div className="relative w-full h-full">
-      <div ref={mapContainer} className="absolute inset-0" />
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-background/20 to-transparent h-20" />
+    <div className="absolute inset-0">
+      <div ref={mapContainer} className="w-full h-full" />
+      <div className="absolute top-0 left-0 right-0 pointer-events-none bg-gradient-to-b from-background/20 to-transparent h-20" />
     </div>
   );
 };
