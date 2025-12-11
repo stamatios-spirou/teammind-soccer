@@ -1,18 +1,27 @@
 import { useState, useEffect } from "react";
-import { Clock, Check, X } from "lucide-react";
+import { Sun, Sunset, Moon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { DailyAvailabilityPopup } from "./DailyAvailabilityPopup";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface StatusControlPanelProps {
   onStatusChange?: () => void;
+  compact?: boolean;
 }
 
-export const StatusControlPanel = ({ onStatusChange }: StatusControlPanelProps) => {
+const TIME_SLOTS = [
+  { id: 'morning', label: 'Morning', icon: Sun, description: '6am - 12pm' },
+  { id: 'afternoon', label: 'Afternoon', icon: Sunset, description: '12pm - 6pm' },
+  { id: 'night', label: 'Night', icon: Moon, description: '6pm - 12am' },
+];
+
+export const StatusControlPanel = ({ onStatusChange, compact = true }: StatusControlPanelProps) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [isLooking, setIsLooking] = useState(false);
   const [timeSlot, setTimeSlot] = useState<string | null>(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -40,58 +49,100 @@ export const StatusControlPanel = ({ onStatusChange }: StatusControlPanelProps) 
     }
   };
 
-  const handleAvailabilitySet = (slot: string) => {
-    setIsLooking(true);
-    setTimeSlot(slot);
-    setShowPopup(false);
-    onStatusChange?.();
+  const handleSetAvailability = async (slot: string) => {
+    if (!user) return;
+    setSubmitting(true);
+
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const { error } = await supabase
+        .from('user_availability')
+        .upsert({
+          user_id: user.id,
+          date: today,
+          time_slot: slot,
+          status: 'looking',
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,date'
+        });
+
+      if (error) throw error;
+
+      setIsLooking(true);
+      setTimeSlot(slot);
+      toast({ title: "You're looking for a game!", description: `Time: ${TIME_SLOTS.find(t => t.id === slot)?.label}` });
+      onStatusChange?.();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleClose = () => {
-    setShowPopup(false);
-  };
+  const handleNotLooking = async () => {
+    if (!user) return;
+    setSubmitting(true);
 
-  const getTimeSlotLabel = (slot: string | null) => {
-    switch (slot) {
-      case 'morning': return 'Morning';
-      case 'afternoon': return 'Afternoon';
-      case 'night': return 'Night';
-      default: return '';
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await supabase
+        .from('user_availability')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('date', today);
+
+      setIsLooking(false);
+      setTimeSlot(null);
+      toast({ title: "Status updated", description: "You're not looking for a game today" });
+      onStatusChange?.();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <>
-      <button
-        onClick={() => setShowPopup(true)}
-        className="bg-card/80 backdrop-blur-sm rounded-xl p-3 border border-border hover:border-primary/50 transition-colors text-left w-full"
-      >
-        <div className="flex items-center gap-2 mb-1">
-          {isLooking ? (
-            <Check className="w-4 h-4 text-green-500" />
-          ) : (
-            <X className="w-4 h-4 text-muted-foreground" />
-          )}
-          <span className="text-xs font-medium text-muted-foreground">Today's Status</span>
-        </div>
-        <p className={`text-sm font-semibold ${isLooking ? 'text-green-500' : 'text-muted-foreground'}`}>
-          {isLooking ? 'Looking for a Game' : 'Not Looking Today'}
-        </p>
-        {isLooking && timeSlot && (
-          <div className="flex items-center gap-1 mt-1">
-            <Clock className="w-3 h-3 text-primary" />
-            <span className="text-xs text-primary font-medium">{getTimeSlotLabel(timeSlot)}</span>
-          </div>
-        )}
-        <p className="text-xs text-muted-foreground mt-1">Tap to change</p>
-      </button>
+    <div className="space-y-3">
+      <h3 className="font-semibold text-foreground text-sm">Today's Status</h3>
+      
+      <div className="grid grid-cols-3 gap-2">
+        {TIME_SLOTS.map((slot) => {
+          const Icon = slot.icon;
+          const isSelected = isLooking && timeSlot === slot.id;
+          return (
+            <button
+              key={slot.id}
+              onClick={() => handleSetAvailability(slot.id)}
+              disabled={submitting}
+              className={`flex flex-col items-center p-3 rounded-xl border transition-all ${
+                isSelected
+                  ? 'bg-primary/20 border-primary'
+                  : 'bg-muted/50 border-border hover:border-primary/50'
+              }`}
+            >
+              <Icon className={`w-5 h-5 mb-1 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+              <span className={`text-xs font-medium ${isSelected ? 'text-primary' : 'text-foreground'}`}>
+                {slot.label}
+              </span>
+              <span className="text-[10px] text-muted-foreground">{slot.description}</span>
+            </button>
+          );
+        })}
+      </div>
 
-      {showPopup && (
-        <DailyAvailabilityPopup
-          onClose={handleClose}
-          onAvailabilitySet={handleAvailabilitySet}
-        />
+      {isLooking && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleNotLooking}
+          disabled={submitting}
+          className="w-full text-muted-foreground hover:text-foreground"
+        >
+          Not looking today
+        </Button>
       )}
-    </>
+    </div>
   );
 };

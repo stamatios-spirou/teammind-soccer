@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { StatusControlPanel } from "./StatusControlPanel";
-import { Edit2 } from "lucide-react";
+import { Edit2, User, ChevronDown, ChevronUp, Check, X, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface UserProfile {
   full_name: string | null;
@@ -24,6 +25,9 @@ export const HeroSection = () => {
   const [editPosition, setEditPosition] = useState('');
   const [editRole, setEditRole] = useState('');
   const [saving, setSaving] = useState(false);
+  const [expandedPanel, setExpandedPanel] = useState<'profile' | 'status' | null>(null);
+  const [isLooking, setIsLooking] = useState(false);
+  const [timeSlot, setTimeSlot] = useState<string | null>(null);
   
   const userName = profile?.full_name?.split(' ')[0] || user?.user_metadata?.full_name?.split(' ')[0] || 'Player';
 
@@ -31,6 +35,7 @@ export const HeroSection = () => {
     if (user) {
       loadProfile();
       loadRole();
+      loadStatus();
     }
   }, [user]);
 
@@ -54,17 +59,32 @@ export const HeroSection = () => {
     if (data) setUserRole(data.role);
   };
 
+  const loadStatus = async () => {
+    if (!user) return;
+    const today = new Date().toISOString().split('T')[0];
+    const { data } = await supabase
+      .from('user_availability')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('date', today)
+      .maybeSingle();
+    if (data) {
+      setIsLooking(data.status === 'looking');
+      setTimeSlot(data.time_slot);
+    }
+  };
+
   const handleEditOpen = () => {
     setEditPosition(profile?.preferred_position || '');
     setEditRole(userRole);
     setEditOpen(true);
+    setExpandedPanel(null);
   };
 
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
     try {
-      // Update position
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ preferred_position: editPosition as any })
@@ -72,11 +92,8 @@ export const HeroSection = () => {
       
       if (profileError) throw profileError;
 
-      // Update role if changed
       if (editRole !== userRole) {
-        // Delete existing role
         await supabase.from('user_roles').delete().eq('user_id', user.id);
-        // Insert new role
         const { error: roleError } = await supabase
           .from('user_roles')
           .insert({ user_id: user.id, role: editRole as any });
@@ -111,6 +128,19 @@ export const HeroSection = () => {
       default: return 'Player';
     }
   };
+
+  const getTimeSlotLabel = (slot: string | null) => {
+    switch (slot) {
+      case 'morning': return 'Morning';
+      case 'afternoon': return 'Afternoon';
+      case 'night': return 'Night';
+      default: return '';
+    }
+  };
+
+  const togglePanel = (panel: 'profile' | 'status') => {
+    setExpandedPanel(expandedPanel === panel ? null : panel);
+  };
   
   return (
     <div className="relative h-72 overflow-hidden">
@@ -129,37 +159,108 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
       
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-between px-4 py-6">
-        {/* Top Row: User Info + Status Panel */}
-        <div className="flex justify-between items-start gap-4">
-          {/* User Info - Left Side */}
-          <button
-            onClick={handleEditOpen}
-            className="bg-card/80 backdrop-blur-sm rounded-xl p-3 border border-border hover:border-primary/50 transition-colors text-left"
+      <div className="relative z-10 h-full flex flex-col justify-between px-4 py-4">
+        {/* Top Row: Compact Buttons */}
+        <div className="flex gap-2">
+          {/* Profile Button */}
+          <motion.button
+            onClick={() => togglePanel('profile')}
+            className="flex items-center gap-2 bg-card/90 backdrop-blur-sm rounded-full px-3 py-2 border border-border hover:border-primary/50 transition-all"
+            whileTap={{ scale: 0.97 }}
           >
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="text-primary font-bold text-sm">
-                  {userName.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div>
-                <p className="font-semibold text-foreground text-sm">{userName}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-primary font-medium">{getPositionLabel(profile?.preferred_position || null)}</span>
-                  <span className="text-xs text-muted-foreground">•</span>
-                  <span className="text-xs text-muted-foreground">{getRoleLabel(userRole)}</span>
+            <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center">
+              <User className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium text-foreground">{userName}</span>
+            <span className="text-xs text-primary font-medium">{getPositionLabel(profile?.preferred_position || null)}</span>
+            {expandedPanel === 'profile' ? (
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            )}
+          </motion.button>
+
+          {/* Status Button */}
+          <motion.button
+            onClick={() => togglePanel('status')}
+            className={`flex items-center gap-2 bg-card/90 backdrop-blur-sm rounded-full px-3 py-2 border transition-all ${
+              isLooking ? 'border-green-500/50' : 'border-border'
+            } hover:border-primary/50`}
+            whileTap={{ scale: 0.97 }}
+          >
+            {isLooking ? (
+              <Check className="w-4 h-4 text-green-500" />
+            ) : (
+              <X className="w-4 h-4 text-muted-foreground" />
+            )}
+            <span className={`text-sm font-medium ${isLooking ? 'text-green-500' : 'text-muted-foreground'}`}>
+              {isLooking ? 'Looking' : 'Not Looking'}
+            </span>
+            {isLooking && timeSlot && (
+              <span className="text-xs text-primary">• {getTimeSlotLabel(timeSlot)}</span>
+            )}
+            {expandedPanel === 'status' ? (
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            )}
+          </motion.button>
+        </div>
+
+        {/* Expanded Panels */}
+        <AnimatePresence>
+          {expandedPanel === 'profile' && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -10, height: 0 }}
+              className="absolute top-16 left-4 right-4 z-20"
+            >
+              <div className="bg-card/95 backdrop-blur-md rounded-xl p-4 border border-border shadow-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-foreground">Your Profile</h3>
+                  <Button size="sm" variant="ghost" onClick={handleEditOpen}>
+                    <Edit2 className="w-4 h-4 mr-1" />
+                    Edit
+                  </Button>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground">Position</p>
+                    <p className="text-sm font-semibold text-primary">{getPositionLabel(profile?.preferred_position || null)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground">Role</p>
+                    <p className="text-sm font-semibold text-foreground">{getRoleLabel(userRole)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground">Skill</p>
+                    <p className="text-sm font-semibold text-foreground capitalize">{profile?.skill_level || 'N/A'}</p>
+                  </div>
                 </div>
               </div>
-              <Edit2 className="w-3 h-3 text-muted-foreground ml-1" />
-            </div>
-          </button>
+            </motion.div>
+          )}
 
-          {/* Status Control Panel - Right Side */}
-          <div className="w-40">
-            <StatusControlPanel />
-          </div>
-        </div>
+          {expandedPanel === 'status' && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -10, height: 0 }}
+              className="absolute top-16 left-4 right-4 z-20"
+            >
+              <div className="bg-card/95 backdrop-blur-md rounded-xl p-4 border border-border shadow-lg">
+                <StatusControlPanel 
+                  onStatusChange={() => {
+                    loadStatus();
+                    setExpandedPanel(null);
+                  }} 
+                  compact={false}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Bottom: Welcome Text */}
         <div>
@@ -171,6 +272,14 @@ export const HeroSection = () => {
           </p>
         </div>
       </div>
+
+      {/* Click outside to close */}
+      {expandedPanel && (
+        <div 
+          className="absolute inset-0 z-10" 
+          onClick={() => setExpandedPanel(null)}
+        />
+      )}
 
       {/* Edit Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
