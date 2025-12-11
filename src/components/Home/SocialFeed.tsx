@@ -1,6 +1,5 @@
-import { Heart, MessageCircle, Share2, Trophy } from "lucide-react";
+import { Heart, MessageCircle, Trophy } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
 interface Post {
   id: string;
   username: string;
@@ -97,9 +96,6 @@ export const SocialFeed = () => {
               <button className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
                 <MessageCircle className="w-4 h-4" />
                 <span className="text-sm">{post.comments}</span>
-              </button>
-              <button className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
-                <Share2 className="w-4 h-4" />
               </button>
             </div>
           </div>

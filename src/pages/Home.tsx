@@ -34,8 +34,6 @@ const NJIT_FIELDS = [
   { name: "Frederick Douglass Field", location: "42 Warren Street, Newark, NJ 07102" }
 ];
 
-const AVAILABILITY_KEY = "daily_availability_shown";
-
 const Home = () => {
   const [matches, setMatches] = useState<MatchData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,39 +41,35 @@ const Home = () => {
   const [showAvailabilityPopup, setShowAvailabilityPopup] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, justLoggedIn, clearJustLoggedIn } = useAuth();
   const { stats, refetch: refetchStats } = useAvailabilityStats();
 
   useEffect(() => {
     loadMatches();
     if (user) {
       loadUserProfile();
-      checkDailyAvailability();
     }
   }, [user]);
 
-  const checkDailyAvailability = () => {
-    const today = new Date().toISOString().split('T')[0];
-    const lastShown = localStorage.getItem(AVAILABILITY_KEY);
-    
-    if (lastShown !== today) {
-      // Show popup after a short delay for better UX
-      setTimeout(() => {
+  // Show availability popup after login
+  useEffect(() => {
+    if (user && justLoggedIn) {
+      // Small delay for better UX
+      const timer = setTimeout(() => {
         setShowAvailabilityPopup(true);
+        clearJustLoggedIn();
       }, 500);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [user, justLoggedIn, clearJustLoggedIn]);
 
   const handleAvailabilityClose = () => {
-    const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem(AVAILABILITY_KEY, today);
     setShowAvailabilityPopup(false);
   };
 
   const handleAvailabilitySet = (timeSlot: string) => {
-    const today = new Date().toISOString().split('T')[0];
-    localStorage.setItem(AVAILABILITY_KEY, today);
     refetchStats();
+    setShowAvailabilityPopup(false);
   };
 
   const loadUserProfile = async () => {
@@ -185,7 +179,7 @@ const Home = () => {
         />
       )}
 
-      {/* Hero Section */}
+      {/* Hero Section with Status Panel */}
       <HeroSection />
 
       {/* Live Stats */}

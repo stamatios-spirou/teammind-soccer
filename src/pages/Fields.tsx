@@ -87,18 +87,23 @@ const Fields = () => {
   }, []);
 
   return (
-    <div className="h-screen w-full relative pb-20">
+    <div className="fixed inset-0 flex flex-col">
       {/* Map Header */}
       <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-background via-background/80 to-transparent px-4 pt-6 pb-12">
         <h1 className="text-2xl font-bold text-foreground">Fields</h1>
         <p className="text-sm text-muted-foreground">Tap a pin to view details</p>
       </div>
+      
+      {/* Map Container - fills remaining space above bottom nav */}
+      <div className="flex-1 pb-20">
 
       {/* Interactive Map */}
       <FieldsMap 
         fields={fields} 
         onFieldSelect={setSelectedField} 
       />
+
+      </div>
 
       {/* Field Detail Panel */}
       <FieldDetailPanel 
