@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Heart, MessageCircle, Trophy, Plus, X, Send } from "lucide-react";
+import { Heart, MessageCircle, Trophy, Plus, Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+const postSchema = z.object({
+  content: z.string().trim().min(1, "Post content is required").max(2000, "Post content too long (max 2000 chars)"),
+  match_tag: z.string().max(100, "Match tag too long").optional()
+});
+
+const commentSchema = z.object({
+  content: z.string().trim().min(1, "Comment is required").max(500, "Comment too long (max 500 chars)")
+});
 
 interface Post {
   id: string;
@@ -101,14 +111,29 @@ const Feed = () => {
   };
 
   const handleCreatePost = async () => {
-    if (!user || !newPostContent.trim()) return;
+    if (!user) return;
+
+    // Validate post content
+    const validation = postSchema.safeParse({
+      content: newPostContent,
+      match_tag: newPostMatchTag || undefined
+    });
+
+    if (!validation.success) {
+      toast({ 
+        title: "Validation Error", 
+        description: validation.error.errors[0]?.message || "Invalid input", 
+        variant: "destructive" 
+      });
+      return;
+    }
 
     setSubmitting(true);
     try {
       const { error } = await supabase.from('posts').insert({
         user_id: user.id,
-        content: newPostContent.trim(),
-        match_tag: newPostMatchTag.trim() || null
+        content: validation.data.content,
+        match_tag: validation.data.match_tag || null
       });
 
       if (error) throw error;
@@ -165,13 +190,25 @@ const Feed = () => {
   };
 
   const handleSubmitComment = async (postId: string) => {
-    if (!user || !newComment[postId]?.trim()) return;
+    if (!user) return;
+
+    // Validate comment
+    const validation = commentSchema.safeParse({ content: newComment[postId] });
+    
+    if (!validation.success) {
+      toast({ 
+        title: "Validation Error", 
+        description: validation.error.errors[0]?.message || "Invalid input", 
+        variant: "destructive" 
+      });
+      return;
+    }
 
     try {
       const { error } = await supabase.from('post_comments').insert({
         post_id: postId,
         user_id: user.id,
-        content: newComment[postId].trim()
+        content: validation.data.content
       });
 
       if (error) throw error;
@@ -206,12 +243,14 @@ const Feed = () => {
                 value={newPostContent}
                 onChange={(e) => setNewPostContent(e.target.value)}
                 className="bg-muted border-border min-h-[120px]"
+                maxLength={2000}
               />
               <Input
                 placeholder="Match tag (e.g., Lubetkin Field • 5pm)"
                 value={newPostMatchTag}
                 onChange={(e) => setNewPostMatchTag(e.target.value)}
                 className="bg-muted border-border"
+                maxLength={100}
               />
               <Button
                 onClick={handleCreatePost}

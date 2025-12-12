@@ -6,6 +6,13 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Zap } from 'lucide-react';
+import { z } from 'zod';
+
+const authSchema = z.object({
+  email: z.string().email('Invalid email address').max(255, 'Email too long'),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(72, 'Password too long'),
+  fullName: z.string().trim().min(1, 'Name is required').max(100, 'Name too long').optional()
+});
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -13,11 +20,31 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string }>({});
   const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+
+    // Validate inputs
+    const validation = authSchema.safeParse({
+      email,
+      password,
+      fullName: isSignUp ? fullName : undefined
+    });
+
+    if (!validation.success) {
+      const fieldErrors: typeof errors = {};
+      validation.error.errors.forEach((err) => {
+        const field = err.path[0] as keyof typeof errors;
+        fieldErrors[field] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -65,8 +92,10 @@ const Auth = () => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 className="bg-muted border-border"
+                maxLength={100}
                 required
               />
+              {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
             </div>
           )}
 
@@ -78,8 +107,10 @@ const Auth = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-muted border-border"
+              maxLength={255}
               required
             />
+            {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
           </div>
 
           <div className="space-y-2">
@@ -91,8 +122,10 @@ const Auth = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="bg-muted border-border"
               required
-              minLength={6}
+              minLength={8}
+              maxLength={72}
             />
+            {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
           </div>
 
           <Button
