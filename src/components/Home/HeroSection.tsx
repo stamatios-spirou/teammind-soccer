@@ -143,7 +143,7 @@ export const HeroSection = () => {
   };
   
   return (
-    <div className="relative h-72 overflow-hidden">
+    <div className="relative h-80 overflow-hidden pt-[env(safe-area-inset-top)]">
       {/* Stadium Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center" 
@@ -159,7 +159,7 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent" />
       
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col justify-between px-4 py-4">
+      <div className="relative z-10 h-full flex flex-col justify-between px-4 pt-6 pb-5">
         {/* Top Row: Compact Buttons */}
         <div className="flex gap-2">
           {/* Profile Button */}
@@ -263,11 +263,11 @@ export const HeroSection = () => {
         </AnimatePresence>
 
         {/* Bottom: Welcome Text */}
-        <div className="mt-auto pb-2">
-          <h1 className="font-black text-foreground leading-tight text-xl sm:text-2xl max-w-[280px]">
+        <div className="mt-auto mb-4">
+          <h1 className="font-black text-foreground leading-snug text-xl sm:text-2xl max-w-[300px]">
             <span className="text-primary">{userName}</span>, pickup soccer is happening near you today.
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm font-medium">
+          <p className="text-muted-foreground mt-2 text-sm font-medium">
             Join a game at NJIT & Rutgers in seconds.
           </p>
         </div>

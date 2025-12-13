@@ -36,17 +36,41 @@ const CreateMatch = () => {
     
     if (!user) {
       toast({ title: 'Please sign in to create a match', variant: 'destructive' });
+      navigate('/auth');
       return;
     }
 
+    // Validate all required fields
     if (!fieldId) {
       toast({ title: 'Please select a field', variant: 'destructive' });
       return;
     }
 
+    if (!date) {
+      toast({ title: 'Please select a date', variant: 'destructive' });
+      return;
+    }
+
+    if (!time) {
+      toast({ title: 'Please select a time', variant: 'destructive' });
+      return;
+    }
+
+    const parsedMaxPlayers = parseInt(maxPlayers);
+    if (isNaN(parsedMaxPlayers) || parsedMaxPlayers < 6 || parsedMaxPlayers > 22) {
+      toast({ title: 'Max players must be between 6 and 22', variant: 'destructive' });
+      return;
+    }
+
+    // Validate date is not in the past
+    const scheduledAt = new Date(`${date}T${time}`);
+    if (scheduledAt < new Date()) {
+      toast({ title: 'Cannot create a game in the past', variant: 'destructive' });
+      return;
+    }
+
     setLoading(true);
     try {
-      const scheduledAt = new Date(`${date}T${time}`);
 
       // First, get or create the field in the database
       const fieldName = FIELDS.find(f => f.id === fieldId)?.name || '';
