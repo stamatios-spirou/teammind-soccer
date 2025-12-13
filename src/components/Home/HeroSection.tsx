@@ -263,11 +263,11 @@ export const HeroSection = () => {
         </AnimatePresence>
 
         {/* Bottom: Welcome Text */}
-        <div>
+        <div className="mt-auto pb-2">
           <h1 className="font-black text-foreground leading-tight text-xl sm:text-2xl max-w-[280px]">
             <span className="text-primary">{userName}</span>, pickup soccer is happening near you today.
           </h1>
-          <p className="text-muted-foreground mt-2 text-sm font-medium">
+          <p className="text-muted-foreground mt-1 text-sm font-medium">
             Join a game at NJIT & Rutgers in seconds.
           </p>
         </div>
