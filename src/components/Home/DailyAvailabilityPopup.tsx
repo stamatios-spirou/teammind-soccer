@@ -75,7 +75,7 @@ export const DailyAvailabilityPopup = ({ onClose, onAvailabilitySet }: DailyAvai
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center pb-[calc(80px+env(safe-area-inset-bottom))]"
         onClick={onClose}
       >
         <motion.div
@@ -83,7 +83,7 @@ export const DailyAvailabilityPopup = ({ onClose, onAvailabilitySet }: DailyAvai
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: "100%", opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="bg-card w-full sm:w-[400px] sm:rounded-2xl rounded-t-2xl p-6 shadow-2xl border border-border"
+          className="bg-card w-full sm:w-[400px] sm:rounded-2xl rounded-t-2xl p-6 pb-8 shadow-2xl border border-border mb-4 sm:mb-0"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close Button */}
