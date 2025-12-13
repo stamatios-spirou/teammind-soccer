@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import MatchDetails from "./pages/MatchDetails";
+import TeamDetails from "./pages/TeamDetails";
 import AutoPlacementConfirmation from "./pages/AutoPlacementConfirmation";
 import CreateMatch from "./pages/CreateMatch";
 import AutoPlace from "./pages/AutoPlace";
@@ -55,6 +56,7 @@ const App = () => (
             <Route path="/" element={<ProtectedRoute><MainLayout><Home /></MainLayout></ProtectedRoute>} />
             <Route path="/matches" element={<ProtectedRoute><MainLayout><Matches /></MainLayout></ProtectedRoute>} />
             <Route path="/match/:id" element={<ProtectedRoute><MainLayout><MatchDetails /></MainLayout></ProtectedRoute>} />
+            <Route path="/match/:matchId/team/:teamId" element={<ProtectedRoute><MainLayout><TeamDetails /></MainLayout></ProtectedRoute>} />
             <Route path="/create-match" element={<ProtectedRoute><MainLayout><CreateMatch /></MainLayout></ProtectedRoute>} />
             <Route path="/teams" element={<ProtectedRoute><MainLayout><Teams /></MainLayout></ProtectedRoute>} />
             <Route path="/fields" element={<ProtectedRoute><MainLayout><Fields /></MainLayout></ProtectedRoute>} />
