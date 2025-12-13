@@ -140,7 +140,7 @@ const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({ field, onClose }) =
     if (existing) {
       toast.info('You\'re already in this match!');
       setJoining(null);
-      navigate(`/matches/${matchId}`);
+      navigate(`/match/${matchId}`);
       return;
     }
 
@@ -158,7 +158,7 @@ const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({ field, onClose }) =
     } else {
       toast.success('You\'ve joined the match!');
       onClose();
-      navigate(`/matches/${matchId}`);
+      navigate(`/match/${matchId}`);
     }
     setJoining(null);
   };
@@ -296,7 +296,7 @@ const FieldDetailPanel: React.FC<FieldDetailPanelProps> = ({ field, onClose }) =
                       <div 
                         key={match.id} 
                         className="flex items-center justify-between p-3 bg-muted/30 rounded-xl cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => navigate(`/matches/${match.id}`)}
+                        onClick={() => navigate(`/match/${match.id}`)}
                       >
                         <div>
                           <p className="font-medium text-foreground">
