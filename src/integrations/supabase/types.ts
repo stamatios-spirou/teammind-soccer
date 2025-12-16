@@ -629,6 +629,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_match_id_for_team: { Args: { p_team_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
